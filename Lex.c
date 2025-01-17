@@ -1,8 +1,5 @@
-/***************************************
-**** Name: Aaron Zeile *****************
-**** CruzID: 2091251 *******************
-**** Assignment: pa1 *******************
-***************************************/
+// Aaron Zeile
+// Lex.c
 #include <stdio.h>
 #include <stdlib.h>
 #include <stdbool.h>
