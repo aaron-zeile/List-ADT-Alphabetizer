@@ -1,4 +1,6 @@
-// Aaron Zeile
+/***************************************
+**** Name: Aaron Zeile *****************
+***************************************/
 // List.c
 // ----------------------------------------------------------------------------
 #include <stdio.h>
@@ -52,6 +54,7 @@ List newList(void) {
 	List L = malloc(sizeof(ListObj));
 	assert(L != NULL);
 	L->front = L->back = NULL;
+	L->cursor = NULL;
 	L->length = 0;
 	L->cursorIndex = -1;
 	return L;
@@ -161,8 +164,6 @@ bool equals(List A, List B) {
 
 // function to reset list to its original empty state
 void clear(List L) {
-	Node n = NULL;
-	
 	if (L == NULL) {
 		fprintf(stderr, "Error. Trying to clear NULL list.\n");
 		exit(EXIT_FAILURE);
@@ -173,16 +174,9 @@ void clear(List L) {
 	}
 
 	// delete nodes one by one	
-	while (length(L) > 1) {
-		n = L->front;
-		L->front = L->front->next;
-		L->length--;
-		freeNode(&n);
+	while (length(L) > 0) {
+		deleteFront(L);
 	}
-	// final node
-	L->front = L->back = NULL;
-	L->length--;
-	freeNode(&n);
 }
 
 // overwrites value of cursor element
@@ -276,7 +270,6 @@ void prepend(List L, int x) {
 		L->front->prev = n;
 		L->front = n;
 	}
-
 	L->length++;
 }
 
@@ -365,7 +358,6 @@ void insertAfter(List L, int x) {
 
 // deletes front node in list
 void deleteFront(List L) {
-	Node n = NULL; // create new empty node
 
 	// if the list is NULL
 	if (L == NULL) {
@@ -377,19 +369,10 @@ void deleteFront(List L) {
 		fprintf(stderr, "List Error: trying to deleteFront on empty List\n");
 		exit(EXIT_FAILURE);
 	}
-
-	// set n equal to front of list
-	n = L->front;
-	// if the list has nodes after the front
-	if (length(L) > 1) {
-		L->front = L->front->next;
-	}
-	// if front was the only node
-	else {
-		L->front = L->back = NULL;
-	}
-	L->length--;	 // decrease the length
-	freeNode(&n); // free node
+	
+	// delete front
+	moveFront(L);
+	delete(L);
 }
 
 // deletes back node in list
@@ -398,16 +381,9 @@ void deleteBack(List L) {
 		fprintf(stderr, "Error. Trying to deleteBack on empty list.\n");
 		exit(EXIT_FAILURE);
 	}
-	
-	Node n = L->back;
-	if (length(L) > 1) {
-		L->back = L->back->prev;
-	}
-	else {
-		L->front = L->back = NULL;
-	}
-	L->length--;
-	freeNode(&n);
+
+	moveBack(L);
+	delete(L);	
 }
 void delete(List L) {	
 	// if cursor is defined
@@ -448,6 +424,8 @@ void delete(List L) {
 		}
 		// free the cursor node and update length
 		freeNode(&c);
+		L->cursorIndex = -1;
+		L->cursor = NULL;
 		L->length--;
 	}
 }
